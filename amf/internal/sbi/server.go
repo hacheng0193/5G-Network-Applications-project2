@@ -11,6 +11,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
+	"github.com/free5gc/amf/internal/rms"
 
 	amf_context "github.com/free5gc/amf/internal/context"
 	"github.com/free5gc/amf/internal/logger"

@@ -22,10 +22,12 @@ func (s *Server) getRMSRoutes() []Route {
 		{
 			Name:    "getSubscription", 
 			Method:  http.MethodGet,
-			Pattern: "/subscriptions",
+			Pattern: "/subscriptions/",
 			APIFunc: func(c *gin.Context) {
-				subs := rms.QueryAll()
-				c.JSON(http.StatusOK, subs)
+				subs := s.rms.QueryAll()
+				c.JSON(http.StatusOK, gin.H{
+					"subscriptions": subs,
+				})
 			},
 		},
 		// Post operation
@@ -34,7 +36,7 @@ func (s *Server) getRMSRoutes() []Route {
 		{
 			Name:    "postSubscription",
 			Method:  http.MethodPost,
-			Pattern: "/subscriptions",
+			Pattern: "/subscriptions/",
 			APIFunc: func(c *gin.Context) {
 				var sub rms.Subscription
 				if err := c.ShouldBindJSON(&sub); err != nil {
@@ -52,7 +54,7 @@ func (s *Server) getRMSRoutes() []Route {
 		{
 			Name:    "putSubscription",
 			Method:  http.MethodPut,
-			Pattern: "/subscriptions/:subId",
+			Pattern: "/subscriptions/:subId/",
 			APIFunc: func(c *gin.Context) {
 				subId := c.Param("subId")
 				var sub rms.Subscription
@@ -60,10 +62,10 @@ func (s *Server) getRMSRoutes() []Route {
 					c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 					return
 				}
-				if rms.Modify(subId, sub) {
+				if s.rms.Modify(subId, sub) {
 					c.JSON(http.StatusOK, gin.H{"message": "Subscription modified"})
 				} else {
-					rms.Add(sub)
+					s.rms.Add(sub)
 					c.JSON(http.StatusCreated, gin.H{"message": "Subscription created"})
 				}
 			},
@@ -73,11 +75,12 @@ func (s *Server) getRMSRoutes() []Route {
 		{
 			Name:    "deleteSubscription",
 			Method:  http.MethodDelete,
-			Pattern: "/subscriptions/:subId",
+			Pattern: "/subscriptions/:subId/",
 			APIFunc: func(c *gin.Context) {
 				subId := c.Param("subId")
-				if rms.Delete(subId) {
-					c.JSON(http.StatusOK, gin.H{"message": "Subscription deleted"})
+				if s.rms.Delete(subId) {
+					// c.JSON(http.StatusOK, gin.H{"message": "Subscription deleted"})
+					c.Status(http.StatusNoContent)
 				} else {
 					c.JSON(http.StatusNotFound, gin.H{"error": "Subscription not found"})
 				}

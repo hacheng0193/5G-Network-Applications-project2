@@ -1,9 +1,8 @@
 package rms
 
 import (
-	"fmt"
 	"sync"
-
+	"fmt"
 	"github.com/free5gc/util/fsm"
 )
 type Subscription struct {
@@ -15,6 +14,7 @@ type CustomizedRMS struct {
 	// implement your customized RMS fields here
 	mu            sync.RWMutex
 	subscriptions map[string]Subscription // key: subId
+	nextID int
 }
 
 func NewRMS(
@@ -22,6 +22,7 @@ func NewRMS(
 ) *CustomizedRMS {
 	return &CustomizedRMS{
 		subscriptions: make(map[string]Subscription),
+		nextID: 1,
 	}
 }
 
@@ -29,8 +30,10 @@ func (rms *CustomizedRMS) Add(sub Subscription) Subscription{
 	rms.mu.Lock()
 	defer rms.mu.Unlock()
 	// implement your customized RMS add logic here
-	rms.subscriptions[sub.SubId] = sub
-	return sub
+	sub.SubId = fmt.Sprintf("sub-%03d", rms.nextID)
+    rms.nextID++
+    rms.subscriptions[sub.SubId] = sub
+    return sub
 }
 
 func (rms *CustomizedRMS) Modify(subid string, sub Subscription) bool {
