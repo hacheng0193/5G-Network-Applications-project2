@@ -1,6 +1,6 @@
 module github.com/free5gc/amf
 
-go 1.24
+go 1.25.5
 
 require (
 	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2
@@ -9,10 +9,11 @@ require (
 	github.com/free5gc/nas v1.2.1
 	github.com/free5gc/ngap v1.1.1
 	github.com/free5gc/openapi v1.2.2
-	github.com/free5gc/sctp v1.1.0
+	github.com/free5gc/sctp v1.1.1
 	github.com/free5gc/util v1.2.0
 	github.com/gin-gonic/gin v1.10.0
 	github.com/google/uuid v1.6.0
+	github.com/h2non/gock v1.2.0
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826
 	github.com/pkg/errors v0.9.1
@@ -45,7 +46,6 @@ require (
 	github.com/goccy/go-json v0.10.2 // indirect
 	github.com/golang-jwt/jwt/v5 v5.2.2 // indirect
 	github.com/gopherjs/gopherjs v1.17.2 // indirect
-	github.com/h2non/gock v1.2.0 // indirect
 	github.com/h2non/parth v0.0.0-20190131123155-b4df798d6542 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/jtolds/gls v4.20.0+incompatible // indirect
@@ -82,6 +82,4 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
-replace (
-	github.com/free5gc/util => ../util	
-)
+replace github.com/free5gc/util => ../util

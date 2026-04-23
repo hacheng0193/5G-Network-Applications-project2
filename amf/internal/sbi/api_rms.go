@@ -2,8 +2,8 @@ package sbi
 
 import (
 	"net/http"
-
 	"github.com/gin-gonic/gin"
+	"github.com/free5gc/amf/internal/rms"
 )
 
 func (s *Server) getRMSRoutes() []Route {
@@ -24,27 +24,27 @@ func (s *Server) getRMSRoutes() []Route {
 			Method:  http.MethodGet,
 			Pattern: "/subscriptions",
 			APIFunc: func(c *gin.Context) {
-				subs := s.rms.QueryAll()
+				subs := rms.QueryAll()
 				c.JSON(http.StatusOK, subs)
-			}
+			},
 		},
 		// Post operation
 		// Create a new UE-RM subscription
 		// The SubId in the POST request can be filled arbitrarily (e.g., sub-001). Your API handler is then responsible for populating the assigned SubId and returning it.
 		{
-			Name:    "postSubscription", 
+			Name:    "postSubscription",
 			Method:  http.MethodPost,
 			Pattern: "/subscriptions",
 			APIFunc: func(c *gin.Context) {
-				var sub Subscription
+				var sub rms.Subscription
 				if err := c.ShouldBindJSON(&sub); err != nil {
 					c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 					return
 				}
-				s.rms.Add(sub)
-				c.JSON(http.StatusCreated, subscription.SubID)
 
-			}
+				created := s.rms.Add(sub)
+				c.JSON(http.StatusCreated, created)
+			},
 		},
 		// PUT Operation
 		// Create or overwrite a UE-RM subscription
@@ -55,18 +55,18 @@ func (s *Server) getRMSRoutes() []Route {
 			Pattern: "/subscriptions/:subId",
 			APIFunc: func(c *gin.Context) {
 				subId := c.Param("subId")
-				var sub Subscription
+				var sub rms.Subscription
 				if err := c.ShouldBindJSON(&sub); err != nil {
 					c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 					return
 				}
-				if s.rms.Modify(subId, sub) {
+				if rms.Modify(subId, sub) {
 					c.JSON(http.StatusOK, gin.H{"message": "Subscription modified"})
 				} else {
-					s.rms.Add(sub)
+					rms.Add(sub)
 					c.JSON(http.StatusCreated, gin.H{"message": "Subscription created"})
 				}
-			}
+			},
 		},
 		// Delete operation
 		// Delete an existing UE-RM subscription.
@@ -76,12 +76,13 @@ func (s *Server) getRMSRoutes() []Route {
 			Pattern: "/subscriptions/:subId",
 			APIFunc: func(c *gin.Context) {
 				subId := c.Param("subId")
-				if s.rms.Delete(subId) {
+				if rms.Delete(subId) {
 					c.JSON(http.StatusOK, gin.H{"message": "Subscription deleted"})
 				} else {
 					c.JSON(http.StatusNotFound, gin.H{"error": "Subscription not found"})
 				}
-			}
-		}
+			},
+		},
+		
 	}
 }

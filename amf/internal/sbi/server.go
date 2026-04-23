@@ -43,11 +43,13 @@ type Server struct {
 
 	httpServer *http.Server
 	router     *gin.Engine
+	rms *rms.CustomizedRMS
 }
 
 func NewServer(amf ServerAmf, tlsKeyLogPath string) (*Server, error) {
 	s := &Server{
 		ServerAmf: amf,
+		rms: rms.NewRMS(),
 	}
 
 	s.router = newRouter(s)
