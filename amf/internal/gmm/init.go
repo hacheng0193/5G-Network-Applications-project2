@@ -1,6 +1,7 @@
 package gmm
 
 import (
+	"github.com/free5gc/amf/internal/rms"
 	"github.com/free5gc/amf/internal/context"
 	"github.com/free5gc/amf/internal/logger"
 	business_metrics "github.com/free5gc/amf/internal/metrics/business"
@@ -69,6 +70,7 @@ type DummyRMS struct{}
 var _ fsm.RMS = &DummyRMS{}
 
 func (d *DummyRMS) HandleEvent(state *fsm.State, event fsm.EventType, args fsm.ArgsType, trans fsm.Transition) {
+	// fmt.Println("===== Dummy HandleEvent called =====")
 	// Handle the event
 }
 
@@ -78,8 +80,10 @@ func init() {
 	} else {
 		GmmFSM = f
 	}
+	AttachRMS(rms.NewRMS())
 }
 
 func AttachRMS(rms fsm.RMS) {
+	// fmt.Println("===== AttachRMS called =====")
 	GmmFSM.WithRMS(rms)
 }
